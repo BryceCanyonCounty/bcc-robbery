@@ -1,3 +1,6 @@
+# bcc-robbery
+> This script allows players to initiate heists with a simple command, defend against enemy NPCs, and earn valuable rewards from carefully crafted locations. With configurable settings and a version check feature, our script provides a seamless and immersive gaming experience
+
 # Requirements
 - lockpick (Tested on ousiders version will not support any other)
 - VORP Core
