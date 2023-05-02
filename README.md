@@ -22,6 +22,9 @@
 
 # How it works!
 - Enter the command you set in the config to enable robberies. Then when you are near a valid robbery location shoot your gun to start it!
+- Once you have started a robbery you will need to wait out the timer, and defend yourself from enemy npcs if you enabled them.
+- Once the timer has ran out you can begin lockpicking the loot boxes to gain rewards!
+- If you enabled police alerts you will want to make haste as the cops will be on thier way!
 
 # Future Plans
 - Restrict robberies to only be able to start if a certain amount of police are online
