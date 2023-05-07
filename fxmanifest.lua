@@ -23,8 +23,9 @@ dependency {
     'vorp_inventory',
     'vorp_utils',
     'bcc-utils',
+    'bcc-minigames',
     'bcc-job-alerts'
 }
 
 
-version '1.0.0'
+version '1.0.1'

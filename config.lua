@@ -18,6 +18,14 @@ Config.PoliceAlert = {
     BlipTime = 60000
 }
 
+--Lockpicking setup
+Config.LockPick = {
+    MaxAttemptsPerLock = 3,
+    lockpickitem = 'lockpick',
+    difficulty = 10,
+    hintdelay = 500,
+}
+
 -- Main robbery setup
 Config.Robberies = {
     {
