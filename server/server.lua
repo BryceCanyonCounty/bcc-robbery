@@ -5,6 +5,7 @@ TriggerEvent("getCore", function(core)
 end)
 local VORPInv = {}
 VORPInv = exports.vorp_inventory:vorp_inventoryApi()
+local BccUtils = exports['bcc-utils'].initiate()
 
 -------- Job Alert Setup -----
 local police_alert = exports['bcc-job-alerts']:RegisterAlert({
@@ -71,5 +72,4 @@ RegisterServerEvent('bcc-robbery:JobCheck', function()
     end
 end)
 
-local BccUtils = exports['bcc-utils'].initiate()
 BccUtils.Versioner.checkRelease(GetCurrentResourceName(), 'https://github.com/BryceCanyonCounty/bcc-robbery')
