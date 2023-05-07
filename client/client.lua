@@ -20,7 +20,7 @@ RegisterNetEvent('bcc-robbery:RobberyEnabler', function()
 end)
 
 ----- Thread to trigger the events -----
-Citizen.CreateThread(function()
+CreateThread(function()
     for k, v in pairs(Config.Robberies) do
         TriggerEvent('bcc-robbery:MainHandler', v)
     end
@@ -29,12 +29,12 @@ end)
 ------ Main Event Handler Triggers the robberies ------
 AddEventHandler('bcc-robbery:MainHandler', function(v)
     while true do
-        Citizen.Wait(200)
+        Wait(200)
         if robberyenable then
             local plc = GetEntityCoords(PlayerPedId())
             if GetDistanceBetweenCoords(v.StartingCoords.x, v.StartingCoords.y, v.StartingCoords.z, plc.x, plc.y, plc.z) < 5 then
                 while true do
-                    Citizen.Wait(5)
+                    Wait(5)
                     if GetDistanceBetweenCoords(v.StartingCoords.x, v.StartingCoords.y, v.StartingCoords.z, plc.x, plc.y, plc.z) > 5 then break end
                     if not Inmission then
                         if IsPedShooting(PlayerPedId()) then
@@ -60,7 +60,7 @@ RegisterNetEvent('bcc-robbery:RobberyHandler', function(v)
 
     local waittimer = v.WaitBeforeLoot
     while true do
-        Citizen.Wait(10)
+        Wait(10)
         local pl = GetEntityCoords(PlayerPedId())
 
         if PlayerDead then break end
@@ -69,7 +69,7 @@ RegisterNetEvent('bcc-robbery:RobberyHandler', function(v)
         local roundedtimer = waittimer / 60000
         local rounded2 = (math.floor(roundedtimer * 100) / 100)
 
-        DrawText3D(pl.x, pl.y, pl.z, Config.Language.HoldOutBeforeLooting .. ' ' .. tostring(rounded2) .. ' ' .. Config.Language.HoldOutBeforeLooting2)
+        BccUtils.Misc.DrawText3D(pl.x, pl.y, pl.z, Config.Language.HoldOutBeforeLooting .. ' ' .. tostring(rounded2) .. ' ' .. Config.Language.HoldOutBeforeLooting2)
         if waittimer <= 0 then
             VORPcore.NotifyRightTip(Config.Language.LootMarked, 4000) break
         end
@@ -92,8 +92,26 @@ end)
 AddEventHandler('bcc-robbery:LootHandler', function(e)
     local PromptGroup = VORPutils.Prompts:SetupPromptGroup() --registers a prompt group using vorp_utils
     local firstprompt = PromptGroup:RegisterPrompt(Config.Language.Rob, 0x760A9C6F, 1, 1, true, 'hold', {timedeventhash = "MEDIUM_TIMED_EVENT"})
+    local cfg = {
+        focus = true, -- Should minigame take nui focus
+        cursor = true, -- Should minigame have cursor  (required for lockpick)
+        maxattempts = Config.LockPick.MaxAttemptsPerLock, -- How many fail attempts are allowed before game over
+        threshold = Config.LockPick.difficulty, -- +- threshold to the stage degree (bigger number means easier)
+        hintdelay = Config.LockPick.hintdelay, --milliseconds delay on when the circle will shake to show lockpick is in the right position.
+        stages = {
+          {
+            deg = 25 -- 0-360 degrees
+          },
+          {
+            deg = 0 -- 0-360 degrees
+          },
+          {
+            deg = 300 -- 0-360 degrees
+          }
+        }
+    }
     while true do
-        Citizen.Wait(5)
+        Wait(5)
         if PlayerDead then break end
 
 
@@ -101,24 +119,24 @@ AddEventHandler('bcc-robbery:LootHandler', function(e)
         
         local dist = GetDistanceBetweenCoords(plc.x, plc.y, plc.z, e.LootCoordinates.x, e.LootCoordinates.y, e.LootCoordinates.z, true)
         if dist < 6 then
-            DrawText3D(e.LootCoordinates.x, e.LootCoordinates.y, e.LootCoordinates.z, Config.Language.Robbery)
+            BccUtils.Misc.DrawText3D(e.LootCoordinates.x, e.LootCoordinates.y, e.LootCoordinates.z, Config.Language.Robbery)
         end
         if dist < 2 then
             PromptGroup:ShowGroup(Config.Language.Robbery)
             if firstprompt:HasCompleted() then
 
-                local result = exports['lockpick']:startLockpick() --starts the lockpick and sets result to equal the result will print true if done right false if failed
-                if result then
-                    --Trigger event to add items
-                    if e.CashReward > 0 then
-                        TriggerServerEvent('bcc-robbery:CashPayout', e.CashReward)
+                MiniGame.Start('lockpick', cfg, function(result)
+                    if result.unlocked then
+                        if e.CashReward > 0 then
+                            TriggerServerEvent('bcc-robbery:CashPayout', e.CashReward)
+                        end
+                        TriggerServerEvent('bcc-robbery:ItemsPayout', e)
+                        Inmission = false
+                    else
+                        VORPcore.NotifyRightTip(Config.Language.PickFailed, 4000)
+                        Inmission = false
                     end
-                    TriggerServerEvent('bcc-robbery:ItemsPayout', e)
-                    Inmission = false break
-                else
-                    VORPcore.NotifyRightTip(Config.Language.PickFailed, 4000)
-                    Inmission = false break
-                end
+                end) break
             end
         end
     end
