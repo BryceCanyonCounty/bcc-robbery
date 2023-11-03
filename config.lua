@@ -24,6 +24,18 @@ Config.LockPick = {
     lockpickitem = 'lockpick',
     difficulty = 10,
     hintdelay = 500,
+    pins = { -- hardcoded pins, if randomPins set to true, then this will be ignored.
+        {
+            deg = 25 -- 0-360 degrees
+        },
+        {
+            deg = 0 -- 0-360 degrees
+        },
+        {
+            deg = 300 -- 0-360 degrees
+        }
+    },
+    randomPins = true --If random is set to True, then pins above will be ignored.
 }
 
 -- Main robbery setup

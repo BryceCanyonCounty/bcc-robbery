@@ -90,6 +90,8 @@ end)
 
 ---------- Loot Locations Setup ---------
 AddEventHandler('bcc-robbery:LootHandler', function(e)
+    math.randomseed(GetGameTimer()) --Create a new seed for math.random
+
     local PromptGroup = VORPutils.Prompts:SetupPromptGroup() --registers a prompt group using vorp_utils
     local firstprompt = PromptGroup:RegisterPrompt(Config.Language.Rob, 0x760A9C6F, 1, 1, true, 'hold', {timedeventhash = "MEDIUM_TIMED_EVENT"})
     local cfg = {
@@ -98,18 +100,23 @@ AddEventHandler('bcc-robbery:LootHandler', function(e)
         maxattempts = Config.LockPick.MaxAttemptsPerLock, -- How many fail attempts are allowed before game over
         threshold = Config.LockPick.difficulty, -- +- threshold to the stage degree (bigger number means easier)
         hintdelay = Config.LockPick.hintdelay, --milliseconds delay on when the circle will shake to show lockpick is in the right position.
-        stages = {
-          {
-            deg = 25 -- 0-360 degrees
-          },
-          {
-            deg = 0 -- 0-360 degrees
-          },
-          {
-            deg = 300 -- 0-360 degrees
-          }
-        }
+        stages = Config.LockPick.pins
     }
+
+    if Config.LockPick.randomPins == true then
+        cfg.stages = {
+            {
+                deg = math.random(0, 360) -- 0-360 degrees
+            },
+            {
+                deg = math.random(0, 360) -- 0-360 degrees
+            },
+            {
+                deg = math.random(0, 360) -- 0-360 degrees
+            }
+        }
+    end
+
     while true do
         Wait(5)
         if PlayerDead then break end
