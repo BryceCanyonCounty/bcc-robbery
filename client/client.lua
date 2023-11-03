@@ -90,7 +90,7 @@ end)
 
 ---------- Loot Locations Setup ---------
 AddEventHandler('bcc-robbery:LootHandler', function(e)
-    math.randomseed(GetGameTimer()) --Create a new
+    math.randomseed(GetGameTimer()) --Create a new seed for math.random
 
     local PromptGroup = VORPutils.Prompts:SetupPromptGroup() --registers a prompt group using vorp_utils
     local firstprompt = PromptGroup:RegisterPrompt(Config.Language.Rob, 0x760A9C6F, 1, 1, true, 'hold', {timedeventhash = "MEDIUM_TIMED_EVENT"})
