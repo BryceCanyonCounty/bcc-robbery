@@ -2,7 +2,6 @@
 Inmission = false
 local robberyenable = false
 
-
 ----- Registering Command To enable and disable robberies ----
 RegisterCommand(Config.RobberyCommand, function()
     TriggerServerEvent('bcc-robbery:JobCheck')
@@ -52,6 +51,7 @@ end)
 RegisterNetEvent('bcc-robbery:RobberyHandler', function(v)
     Inmission = true
     TriggerEvent('bcc-robbery:DeadCheck', v.StartingCoords)
+    TriggerEvent("S!r@#Blu$$-SS-REPSYSTEM:CLIENT:REMOVEREP", 10)
     VORPcore.NotifyRightTip(Config.Language.RobberyStart, 4000)
 
     if v.EnemyNpcs then
@@ -81,7 +81,6 @@ RegisterNetEvent('bcc-robbery:RobberyHandler', function(v)
         Wait(5000)
         PlayerDead = false return
     end
-
 
     for k, e in pairs(v.LootLocations) do
         TriggerEvent('bcc-robbery:LootHandler', e)
@@ -121,29 +120,35 @@ AddEventHandler('bcc-robbery:LootHandler', function(e)
         Wait(5)
         if PlayerDead then break end
 
-
         local plc = GetEntityCoords(PlayerPedId())
-        
         local dist = GetDistanceBetweenCoords(plc.x, plc.y, plc.z, e.LootCoordinates.x, e.LootCoordinates.y, e.LootCoordinates.z, true)
+        
         if dist < 6 then
             BccUtils.Misc.DrawText3D(e.LootCoordinates.x, e.LootCoordinates.y, e.LootCoordinates.z, Config.Language.Robbery)
         end
+        
         if dist < 2 then
             PromptGroup:ShowGroup(Config.Language.Robbery)
             if firstprompt:HasCompleted() then
-
                 MiniGame.Start('lockpick', cfg, function(result)
                     if result.unlocked then
                         if e.CashReward > 0 then
                             TriggerServerEvent('bcc-robbery:CashPayout', e.CashReward)
+                            VORPcore.NotifyRightTip("Received cash reward: $" .. e.CashReward, 4000)
                         end
-                        TriggerServerEvent('bcc-robbery:ItemsPayout', e)
+
+                        for _, item in ipairs(e.ItemRewards) do
+                            TriggerServerEvent('bcc-robbery:ItemsPayout', item.name, item.count)
+                            VORPcore.NotifyRightTip("Received item reward: " .. item.count .. "x " .. item.name, 4000)
+                        end
+
                         Inmission = false
                     else
                         VORPcore.NotifyRightTip(Config.Language.PickFailed, 4000)
-                        Inmission = false
+                        Inmission = true
                     end
-                end) break
+                end) -- Correct closing parenthesis and bracket
+                break
             end
         end
     end
