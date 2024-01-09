@@ -50,26 +50,52 @@ RegisterServerEvent('bcc-robbery:CashPayout', function(amount)
     Character.addCurrency(0, amount)
 end)
 
-RegisterServerEvent('bcc-robbery:ItemsPayout', function(table)
-    for k, v in pairs(table.ItemRewards) do
-        VORPInv.addItem(source, v.name, v.count)
-    end
+RegisterServerEvent('bcc-robbery:ItemsPayout', function(itemName, itemCount)
+    local Character = VORPcore.getUser(source).getUsedCharacter -- Checks the character used
+    VORPInv.addItem(source, itemName, itemCount)
 end)
+
 
 -------- Job Restrictor Check -------
 RegisterServerEvent('bcc-robbery:JobCheck', function()
-    local Character = VORPcore.getUser(source).getUsedCharacter --checks the char used
+    local _source = source
+    local Character = VORPcore.getUser(_source).getUsedCharacter -- Get player's character
+    
     local job = false
     for k, v in pairs(Config.NoRobberyJobs) do
         if v.jobname == Character.job then
             job = true
+            break -- Stop the loop if the job is found in the restricted list
         end
     end
+
+    local policeCount = 0
+
+    -- Calculate the number of police officers
+    for _, player in ipairs(GetPlayers()) do
+        local playerCharacter = VORPcore.getUser(player).getUsedCharacter
+        if playerCharacter.job == "police" then
+            policeCount = policeCount + 1
+        end
+    end
+
+    local Inventory = exports.vorp_inventory:vorp_inventoryApi()
+
     if not job then
-        TriggerClientEvent('bcc-robbery:RobberyEnabler', source)
+        -- Check if the player has the required item
+        local count = Inventory.getItemCount(_source, Config.RequiredItem)
+        if count >= 1 then
+            -- Check the police count and execute the appropriate action
+            if policeCount >= Config.MinimumPoliceCount then
+                TriggerClientEvent('bcc-robbery:RobberyEnabler', _source)
+            else
+                VORPcore.NotifyRightTip(_source, Config.Language.NotEnoughPolice, 4000)
+            end
+        else
+            VORPcore.NotifyRightTip(_source, Config.Language.NoRequiredItem, 4000)
+        end
     else
-        VORPcore.NotifyRightTip(source, Config.Language.WrongJob, 4000)
+        VORPcore.NotifyRightTip(_source, Config.Language.WrongJob, 4000)
     end
 end)
-
 BccUtils.Versioner.checkRelease(GetCurrentResourceName(), 'https://github.com/BryceCanyonCounty/bcc-robbery')
