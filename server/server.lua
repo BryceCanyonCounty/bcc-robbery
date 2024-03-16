@@ -48,11 +48,13 @@ end)
 RegisterServerEvent('bcc-robbery:CashPayout', function(amount)
     local Character = VORPcore.getUser(source).getUsedCharacter --checks the char used
     Character.addCurrency(0, amount)
+    VORPcore.NotifyRightTip(source,"You took ~o~"..amount.."$", 5000)
 end)
 
 RegisterServerEvent('bcc-robbery:ItemsPayout', function(table)
     for k, v in pairs(table.ItemRewards) do
         VORPInv.addItem(source, v.name, v.count)
+        VORPcore.NotifyRightTip(source,"You took ~o~"..v.name.." "..v.count, 5000)
     end
 end)
 
