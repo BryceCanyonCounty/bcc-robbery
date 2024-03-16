@@ -7,6 +7,8 @@ local VORPInv = {}
 VORPInv = exports.vorp_inventory:vorp_inventoryApi()
 local BccUtils = exports['bcc-utils'].initiate()
 
+local discord = BccUtils.Discord.setup(Config.Webhook, 'BCC-Robbery','https://cdn.discordapp.com/attachments/1215063804296306758/1217571513713037312/webhooks.256x228.png?ex=660482d6&is=65f20dd6&hm=4484c2bdde6de17680f53cf6999147f1477694c788fb81b19e77e6add140fb79&')
+
 -------- Job Alert Setup -----
 local police_alert = exports['bcc-job-alerts']:RegisterAlert({
     name = 'banker', --The name of the alert
@@ -35,7 +37,7 @@ RegisterServerEvent('bcc-robbery:ServerCooldownCheck', function(shopid, v)
             TriggerClientEvent("bcc-robbery:RobberyHandler", _source, v) --Robbery is not on cooldown
             police_alert:SendAlert(_source)
         else --robbery is on cooldown
-            VORPcore.NotifyRightTip(_source, Config.Language.OnCooldown, 4000)
+            VORPcore.NotifyRightTip(_source, _U('OnCooldown'), 4000)
         end
     else
         cooldowns[shopid] = os.time() --Store the current time
@@ -48,12 +50,19 @@ end)
 RegisterServerEvent('bcc-robbery:CashPayout', function(amount)
     local Character = VORPcore.getUser(source).getUsedCharacter --checks the char used
     Character.addCurrency(0, amount)
+    VORPcore.NotifyRightTip(source,_U('youTook')..amount.."$", 5000)
+    -- Discord notification
+    discord:sendMessage("Name: " .. Character.firstname .. " " .. Character.lastname .. "\nIdentifier: " .. Character.identifier .. "\nReward: " .. amount)
 end)
 
 RegisterServerEvent('bcc-robbery:ItemsPayout', function(table)
+    local Character = VORPcore.getUser(source).getUsedCharacter
     for k, v in pairs(table.ItemRewards) do
         VORPInv.addItem(source, v.name, v.count)
-    end
+        VORPcore.NotifyRightTip(source,_U('youTook')..v.name.." "..v.count, 5000)
+        --Discord notification
+        discord:sendMessage("Name: " .. Character.firstname .. " " .. Character.lastname .. "\nIdentifier: " .. Character.identifier .. "\nReward: " .. v.count.." "..v.name)
+	end
 end)
 
 -------- Job Restrictor Check -------
@@ -68,7 +77,7 @@ RegisterServerEvent('bcc-robbery:JobCheck', function()
     if not job then
         TriggerClientEvent('bcc-robbery:RobberyEnabler', source)
     else
-        VORPcore.NotifyRightTip(source, Config.Language.WrongJob, 4000)
+        VORPcore.NotifyRightTip(source, _U('WrongJob'), 4000)
     end
 end)
 
