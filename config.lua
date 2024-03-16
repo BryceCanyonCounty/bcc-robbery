@@ -1,6 +1,8 @@
 Config = {}
 
 ---------------- Main Setup ------------------------
+Config.defaultlang = "en_lang" -- set your language
+
 Config.RobberyCommand = 'robbery' --command to enter to enable robberies
 Config.RobberyCooldown = 30000 --This is the cooldown in ms for each robbery meaning once a place is robbed you have to wait this long to rob it again
 

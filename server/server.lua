@@ -35,7 +35,7 @@ RegisterServerEvent('bcc-robbery:ServerCooldownCheck', function(shopid, v)
             TriggerClientEvent("bcc-robbery:RobberyHandler", _source, v) --Robbery is not on cooldown
             police_alert:SendAlert(_source)
         else --robbery is on cooldown
-            VORPcore.NotifyRightTip(_source, Config.Language.OnCooldown, 4000)
+            VORPcore.NotifyRightTip(_source, _U('OnCooldown'), 4000)
         end
     else
         cooldowns[shopid] = os.time() --Store the current time
@@ -48,13 +48,13 @@ end)
 RegisterServerEvent('bcc-robbery:CashPayout', function(amount)
     local Character = VORPcore.getUser(source).getUsedCharacter --checks the char used
     Character.addCurrency(0, amount)
-    VORPcore.NotifyRightTip(source,"You took ~o~"..amount.."$", 5000)
+    VORPcore.NotifyRightTip(source,_U('youTook')..amount.."$", 5000)
 end)
 
 RegisterServerEvent('bcc-robbery:ItemsPayout', function(table)
     for k, v in pairs(table.ItemRewards) do
         VORPInv.addItem(source, v.name, v.count)
-        VORPcore.NotifyRightTip(source,"You took ~o~"..v.name.." "..v.count, 5000)
+        VORPcore.NotifyRightTip(source,_U('youTook')..v.name.." "..v.count, 5000)
     end
 end)
 
@@ -70,7 +70,7 @@ RegisterServerEvent('bcc-robbery:JobCheck', function()
     if not job then
         TriggerClientEvent('bcc-robbery:RobberyEnabler', source)
     else
-        VORPcore.NotifyRightTip(source, Config.Language.WrongJob, 4000)
+        VORPcore.NotifyRightTip(source, _U('WrongJob'), 4000)
     end
 end)
 
