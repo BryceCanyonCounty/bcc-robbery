@@ -65,6 +65,29 @@ RegisterServerEvent('bcc-robbery:ItemsPayout', function(table)
 	end
 end)
 
+RegisterServerEvent('bcc-robbery:CheckPolice', function()
+    local _source = source
+    local Character = VORPcore.getUser(source).getUsedCharacter --checks the char used
+    -- Count the number of police online
+    local policeCount = 0
+    for _, playerId in ipairs(GetPlayers()) do
+        local otherUser = VORPcore.getUser(playerId)
+        if otherUser then
+            local otherCharacter = otherUser.getUsedCharacter
+            if otherCharacter and Config.RequiredJobs.Jobs[otherCharacter.job] then
+                policeCount = policeCount + 1
+            end
+        end
+    end
+
+    -- Check if there are enough police
+    if policeCount < Config.RequiredJobs.Amount then
+        VORPcore.NotifyRightTip(_source,  _U('NotEnoughPolice'), 4000) -- Assuming NotifyLeft is a function that shows notifications to the player
+    else
+        -- Enable robbery
+        TriggerClientEvent('bcc-robbery:RobberyEnabler', _source)
+    end
+	
 -------- Job Restrictor Check -------
 RegisterServerEvent('bcc-robbery:JobCheck', function()
     local Character = VORPcore.getUser(source).getUsedCharacter --checks the char used

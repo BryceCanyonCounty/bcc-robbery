@@ -14,6 +14,14 @@ Config.NoRobberyJobs = { --add as many as you want just copy paste a table
     {jobname = 'doctor'},
 }
 
+-- Requirements for robbery (e.g., minimum number of police)
+Config.RequiredJobs = {
+    Amount = 2,  -- Minimum number of police required
+    Jobs = {
+        'police' -- Job identifier for police
+    },
+}
+
 Config.PoliceAlert = {
     enabled = true,
     Job = 'police',

@@ -12,4 +12,5 @@ Locales["en_lang"] = {
     RobberyDisable = 'Robberies Disabled',
     WrongJob = 'You can not start robberies due to your job!',
     youTook = 'You took ~o~',
+    NotEnoughPolice = 'There are not enough police officers to start this robbery',
 }

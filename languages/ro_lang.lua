@@ -12,4 +12,5 @@ Locales["ro_lang"] = {
     RobberyDisable = 'Jafurile Dezactivate',
     WrongJob = 'Nu poti jefui din cauza jobului tau!',
     youTook = 'Ai luat ~o~',
+	NotEnoughPolice = 'Nu sunt suficienti ofiteri de politie pentru a incepe un jaf.',
 }
