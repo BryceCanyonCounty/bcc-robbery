@@ -7,7 +7,7 @@ local VORPInv = {}
 VORPInv = exports.vorp_inventory:vorp_inventoryApi()
 local BccUtils = exports['bcc-utils'].initiate()
 
-local discord = BccUtils.Discord.setup(Config.Webhook, 'BCC-Robbery','https://cdn.discordapp.com/attachments/1215063804296306758/1217571513713037312/webhooks.256x228.png?ex=660482d6&is=65f20dd6&hm=4484c2bdde6de17680f53cf6999147f1477694c788fb81b19e77e6add140fb79&')
+local discord = BccUtils.Discord.setup(Config.Webhook, Config.WebhookTitle, Config.WebhookAvatar)
 
 -------- Job Alert Setup -----
 local police_alert = exports['bcc-job-alerts']:RegisterAlert({
@@ -65,6 +65,29 @@ RegisterServerEvent('bcc-robbery:ItemsPayout', function(table)
 	end
 end)
 
+RegisterServerEvent('bcc-robbery:CheckPolice', function()
+    local _source = source
+    local Character = VORPcore.getUser(source).getUsedCharacter --checks the char used
+    -- Count the number of police online
+    local policeCount = 0
+    for _, playerId in ipairs(GetPlayers()) do
+        local otherUser = VORPcore.getUser(playerId)
+        if otherUser then
+            local otherCharacter = otherUser.getUsedCharacter
+            if otherCharacter and Config.RequiredJobs.Jobs[otherCharacter.job] then
+                policeCount = policeCount + 1
+            end
+        end
+    end
+
+    -- Check if there are enough police
+    if policeCount < Config.RequiredJobs.Amount then
+        VORPcore.NotifyRightTip(_source,  _U('NotEnoughPolice'), 4000) -- Assuming NotifyLeft is a function that shows notifications to the player
+    else
+        -- Enable robbery
+        TriggerClientEvent('bcc-robbery:RobberyEnabler', _source)
+    end
+	
 -------- Job Restrictor Check -------
 RegisterServerEvent('bcc-robbery:JobCheck', function()
     local Character = VORPcore.getUser(source).getUsedCharacter --checks the char used

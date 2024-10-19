@@ -6,6 +6,7 @@ local robberyenable = false
 ----- Registering Command To enable and disable robberies ----
 RegisterCommand(Config.RobberyCommand, function()
     TriggerServerEvent('bcc-robbery:JobCheck')
+    TriggerServerEvent('bcc-robbery:CheckPolice')
 end)
 
 --Event the serv will trigger if the player is not a restricted job

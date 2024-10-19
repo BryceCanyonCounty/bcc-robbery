@@ -4,6 +4,8 @@ Config = {}
 Config.defaultlang = "en_lang" -- set your language
 
 Config.Webhook = "" --set your Discord Webhook
+Config.WebhookTitle = 'BCC-Robbery'
+Config.WebookAvatar = ''
 
 Config.RobberyCommand = 'robbery' --command to enter to enable robberies
 Config.RobberyCooldown = 30000 --This is the cooldown in ms for each robbery meaning once a place is robbed you have to wait this long to rob it again
@@ -12,6 +14,14 @@ Config.RobberyCooldown = 30000 --This is the cooldown in ms for each robbery mea
 Config.NoRobberyJobs = { --add as many as you want just copy paste a table
     {jobname = 'polce'},
     {jobname = 'doctor'},
+}
+
+-- Requirements for robbery (e.g., minimum number of police)
+Config.RequiredJobs = {
+    Amount = 2,  -- Minimum number of police required
+    Jobs = {
+        'police' -- Job identifier for police
+    },
 }
 
 Config.PoliceAlert = {
