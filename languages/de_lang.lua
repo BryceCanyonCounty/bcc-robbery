@@ -1,0 +1,17 @@
+Locales["de_lang"] = {
+    RobberyStart = 'Raub gestartet!',
+    OnCooldown = 'Hier wurde kürzlich erst ausgeraubt!',
+    LootMarked = 'Starte ausrauben!',
+    HoldOutBeforeLooting = 'Warte',
+    HoldOutBeforeLooting2 = 'Sekunden, bis zum rauben',
+    RobberyFail = 'Raub fehlgeschlagen!',
+    Rob = 'Aufbrechen',
+    Robbery = 'Schließfach',
+    PickFailed = 'Aufbruch fehlgeschlagen, Schloss defekt',
+    RobberyEnable = 'Raub aktiviert! Schieße, um hier den Raub zu starten!',
+    RobberyDisable = 'Raub deaktiviert',
+    WrongJob = 'Mit meinem Job sollte ich das besser nicht machen...!',
+    youTook = 'Erhalten: ~o~',
+    NotEnoughPolice = 'Zu wenig Sheriffs im Dienst, um zu starten',
+    NoSpace = 'Deine Taschen sind zu voll',
+}
