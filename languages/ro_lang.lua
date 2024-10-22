@@ -3,7 +3,7 @@ Locales["ro_lang"] = {
     OnCooldown = 'Acesta a fost jefuit recent!',
     LootMarked = 'Incepe Jefuirea!',
     HoldOutBeforeLooting = 'Asteapta',
-    HoldOutBeforeLooting2 = 'Minute Inainte de Jefuire',
+    HoldOutBeforeLooting2 = 'Seconds Inainte de Jefuire',
     RobberyFail = 'Jaf Esuat!',
     Rob = 'Sparge Seiful',
     Robbery = 'Seif',
@@ -13,4 +13,5 @@ Locales["ro_lang"] = {
     WrongJob = 'Nu poti jefui din cauza jobului tau!',
     youTook = 'Ai luat ~o~',
 	NotEnoughPolice = 'Nu sunt suficienti ofiteri de politie pentru a incepe un jaf.',
+    NoSpace = 'You do not have enough space in your inventory',
 }
