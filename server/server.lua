@@ -1,107 +1,103 @@
----------- Pulling Essentials -------------
-local VORPcore = {} --Pulls vorp core
-TriggerEvent("getCore", function(core)
-  VORPcore = core
-end)
-local VORPInv = {}
-VORPInv = exports.vorp_inventory:vorp_inventoryApi()
+local Core = exports.vorp_core:GetCore()
 local BccUtils = exports['bcc-utils'].initiate()
 
-local discord = BccUtils.Discord.setup(Config.Webhook, Config.WebhookTitle, Config.WebhookAvatar)
+local discord = BccUtils.Discord.setup(Config.Webhook.URL, Config.Webhook.Title, Config.Webhook.Avatar)
 
--------- Job Alert Setup -----
-local police_alert = exports['bcc-job-alerts']:RegisterAlert({
-    name = 'banker', --The name of the alert
-    command = nil, -- the command, this is what players will use with /
-    message = Config.PoliceAlert.AlertMssg, -- Message to show to theh police
-    messageTime = Config.PoliceAlert.ShowMssgTime, -- Time the message will stay on screen (miliseconds)
-    job = Config.PoliceAlert.Job, -- Job the alert is for
-    jobgrade = { 0, 1, 2, 3, 4, 5 }, -- What grades the alert will effect
-    icon = "star", -- The icon the alert will use
-    hash = -1282792512, -- The radius blip
-    radius = 40.0, -- The size of the radius blip
-    blipTime = Config.PoliceAlert.BlipTime, -- How long the blip will stay for the job (miliseconds)
-    blipDelay = 5000, -- Delay time before the job is notified (miliseconds)
-    originText = "", -- Text displayed to the user who enacted the command
-    originTime = 0 --The time the origintext displays (miliseconds)
-})
+local policeAlert = exports['bcc-job-alerts']:RegisterAlert(Config.Alerts.Police)
 
-------------- Cooldown Handler thanks to Byte ----------------
+-- Cooldown Handler thanks to Byte
 local cooldowns = {}
-RegisterServerEvent('bcc-robbery:ServerCooldownCheck', function(shopid, v)
-    local _source = source
-    if cooldowns[shopid] then --Check if the robery has a cooldown registered yet.
-        local seconds = Config.RobberyCooldown
-        if os.difftime(os.time(), cooldowns[shopid]) >= seconds then -- Checks the current time difference from the stored enacted time, then checks if that difference us past the seconds threshold
-            cooldowns[shopid] = os.time() --Update the cooldown with the new enacted time.
-            TriggerClientEvent("bcc-robbery:RobberyHandler", _source, v) --Robbery is not on cooldown
-            police_alert:SendAlert(_source)
-        else --robbery is on cooldown
-            VORPcore.NotifyRightTip(_source, _U('OnCooldown'), 4000)
+Core.Callback.Register('bcc-robbery:CheckCooldown', function(source, cb, location)
+    local src = source
+    local user = Core.getUser(src)
+    if not user then return cb(false) end
+    local id = location.Id
+
+    if cooldowns[id] then
+        local minutes = (Config.RobberyCooldown * 60)
+        if os.difftime(os.time(), cooldowns[id]) >= minutes then --Check if the cooldown has expired
+            cooldowns[id] = os.time() -- If expired, store the current time
+            cb(true)
+            policeAlert:SendAlert(src)
+        else --Robbery is on cooldown
+            cb(false)
         end
-    else
-        cooldowns[shopid] = os.time() --Store the current time
-        TriggerClientEvent("bcc-robbery:RobberyHandler", _source, v) --Robbery is not on cooldown
-        police_alert:SendAlert(_source)
+    else  --Robbery is not on cooldown
+        cooldowns[id] = os.time() --Store the current time
+        cb(true)
+        policeAlert:SendAlert(src)
     end
 end)
 
---------- Event to handle pay outs ----------
 RegisterServerEvent('bcc-robbery:CashPayout', function(amount)
-    local Character = VORPcore.getUser(source).getUsedCharacter --checks the char used
-    Character.addCurrency(0, amount)
-    VORPcore.NotifyRightTip(source,_U('youTook')..amount.."$", 5000)
-    -- Discord notification
-    discord:sendMessage("Name: " .. Character.firstname .. " " .. Character.lastname .. "\nIdentifier: " .. Character.identifier .. "\nReward: " .. amount)
+    local src = source
+    local user = Core.getUser(src)
+    if not user then return end
+    local character = user.getUsedCharacter
+
+    character.addCurrency(0, amount)
+    Core.NotifyRightTip(source,_U('youTook')..amount..'$', 5000)
+
+    discord:sendMessage('Name: ' .. character.firstname .. ' ' .. character.lastname .. '\nIdentifier: ' .. character.identifier .. '\nReward: ' .. amount)
 end)
 
 RegisterServerEvent('bcc-robbery:ItemsPayout', function(table)
-    local Character = VORPcore.getUser(source).getUsedCharacter
-    for k, v in pairs(table.ItemRewards) do
-        VORPInv.addItem(source, v.name, v.count)
-        VORPcore.NotifyRightTip(source,_U('youTook')..v.name.." "..v.count, 5000)
-        --Discord notification
-        discord:sendMessage("Name: " .. Character.firstname .. " " .. Character.lastname .. "\nIdentifier: " .. Character.identifier .. "\nReward: " .. v.count.." "..v.name)
+    local src = source
+    local user = Core.getUser(src)
+    if not user then return end
+    local character = user.getUsedCharacter
+
+    for _, reward in pairs(table.ItemRewards) do
+        local canCarry = exports.vorp_inventory:canCarryItem(src, reward.name, reward.count)
+        if canCarry then
+            exports.vorp_inventory:addItem(src, reward.name, reward.count)
+            Core.NotifyRightTip(src,_U('youTook')..reward.count..' '..reward.name, 5000)
+
+            discord:sendMessage('Name: ' .. character.firstname .. ' ' .. character.lastname .. '\nIdentifier: ' .. character.identifier .. '\nReward: ' .. reward.count..' '..reward.name)
+        else
+            Core.NotifyRightTip(src, _U('NoSpace'), 4000)
+        end
 	end
 end)
 
-RegisterServerEvent('bcc-robbery:CheckPolice', function()
-    local _source = source
-    local Character = VORPcore.getUser(source).getUsedCharacter --checks the char used
-    -- Count the number of police online
+Core.Callback.Register('bcc-robbery:RobberyCheck', function(source, cb)
+    local src = source
+    local user = Core.getUser(src)
+    if not user then return cb(false) end
+    local character = user.getUsedCharacter
+    local charJob = character.job
+    local hasJob = false
+    local jobTable = Config.Jobs.Prohibited
+
+    for _, job in ipairs(jobTable) do
+        if job == charJob then
+            hasJob = true
+            break
+        end
+    end
+    if hasJob then
+        Core.NotifyRightTip(src, _U('WrongJob'), 4000)
+        return cb(false)
+    end
+
     local policeCount = 0
     for _, playerId in ipairs(GetPlayers()) do
-        local otherUser = VORPcore.getUser(playerId)
-        if otherUser then
-            local otherCharacter = otherUser.getUsedCharacter
-            if otherCharacter and Config.RequiredJobs.Jobs[otherCharacter.job] then
-                policeCount = policeCount + 1
+        for _, job in ipairs(Config.Jobs.Law) do
+            local player = Core.getUser(playerId)
+            if player then
+                local playerChar = player.getUsedCharacter
+                if playerChar.job == job then
+                    policeCount = policeCount + 1
+                end
             end
         end
     end
-
     -- Check if there are enough police
-    if policeCount < Config.RequiredJobs.Amount then
-        VORPcore.NotifyRightTip(_source,  _U('NotEnoughPolice'), 4000) -- Assuming NotifyLeft is a function that shows notifications to the player
-    else
-        -- Enable robbery
-        TriggerClientEvent('bcc-robbery:RobberyEnabler', _source)
+    if policeCount < Config.Jobs.LawAmount then
+        Core.NotifyRightTip(src,  _U('NotEnoughPolice'), 4000)
+        return cb(false)
     end
-	
--------- Job Restrictor Check -------
-RegisterServerEvent('bcc-robbery:JobCheck', function()
-    local Character = VORPcore.getUser(source).getUsedCharacter --checks the char used
-    local job = false
-    for k, v in pairs(Config.NoRobberyJobs) do
-        if v.jobname == Character.job then
-            job = true
-        end
-    end
-    if not job then
-        TriggerClientEvent('bcc-robbery:RobberyEnabler', source)
-    else
-        VORPcore.NotifyRightTip(source, _U('WrongJob'), 4000)
-    end
+    cb(true)
 end)
 
-BccUtils.Versioner.checkRelease(GetCurrentResourceName(), 'https://github.com/BryceCanyonCounty/bcc-robbery')
+BccUtils.Versioner.checkFile(GetCurrentResourceName(), 'https://github.com/BryceCanyonCounty/bcc-robbery')
