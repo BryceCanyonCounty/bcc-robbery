@@ -7,7 +7,7 @@
 - Configurable command for players to enable or disable shooting a gun to start a robbery!
 - Create as many custom robberies as you want!
 - Individual robbery location cooldowns!
-- Cash, and Items rewards from robberies!
+- Cash, gold, rol, and item rewards from robberies!
 - Each robbery location, can have as many loot boxes as you want!
 - Togglable option to have enemy npcs spawn, and attack the player during the robbery!
 - Configurable wait time before the player can lockpick loot boxes!
