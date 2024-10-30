@@ -13,6 +13,8 @@ Locations = {
             { -- Upstairs
                 LootCoordinates = vector3(-325.82, 797.02, 121.54), --coordinates of the loot box
                 CashReward = math.random(50, 450), --amount of cash to reward
+                GoldReward = math.random(1, 5), --amount of gold to reward
+                RolReward = math.random(10, 50), --amount of rol to reward
                 ItemRewards = { --these are the items it will reward can add as many as youd like
                     {
                         name = 'iron', --name of the item in the database
@@ -27,6 +29,8 @@ Locations = {
             { -- Downstairs
                 LootCoordinates = vector3(-321.37, 806.94, 117.88), --coordinates of the loot box
                 CashReward = math.random(50, 450), --amount of cash to reward
+                GoldReward = math.random(1, 5), --amount of gold to reward
+                RolReward = math.random(10, 50), --amount of rol to reward
                 ItemRewards = { --these are the items it will reward can add as many as youd like
                     {
                         name = 'iron', --the name of the item in the database
@@ -53,6 +57,8 @@ Locations = {
             {
                 LootCoordinates = vector3(-301.89, 772.2, 118.7), --coordinates of the loot box
                 CashReward = math.random(50, 1000), --amount of cash to reward set 0 for none
+                GoldReward = math.random(1, 5), --amount of gold to reward
+                RolReward = math.random(10, 50), --amount of rol to reward
                 ItemRewards = { --these are the items it will reward can add as many as youd like
                     {
                         name = 'iron', --name of the item in db
