@@ -11,7 +11,7 @@ Locales["ro_lang"] = {
     RobberyEnable = 'Jafurile sunt activate, trageti cu arma intr-o locatie valida pentru a Incepe un jaf!',
     RobberyDisable = 'Jafurile Dezactivate',
     WrongJob = 'Nu poti jefui din cauza jobului tau!',
-    youTook = 'Ai luat ~o~',
+    youTook = 'Ai luat ',
 	NotEnoughPolice = 'Nu sunt suficienti ofiteri de politie pentru a incepe un jaf.',
-    NoSpace = 'You do not have enough space in your inventory',
+    NoSpace = 'No room for other items!',
 }
