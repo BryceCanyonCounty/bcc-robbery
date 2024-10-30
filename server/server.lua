@@ -29,29 +29,39 @@ Core.Callback.Register('bcc-robbery:CheckCooldown', function(source, cb, locatio
     end
 end)
 
-RegisterServerEvent('bcc-robbery:CashPayout', function(amount)
+RegisterServerEvent('bcc-robbery:RewardPayout', function(lootCfg)
     local src = source
     local user = Core.getUser(src)
     if not user then return end
     local character = user.getUsedCharacter
+    local cash = lootCfg.CashReward
+    local gold = lootCfg.GoldReward
+    local rol = lootCfg.RolReward
 
-    character.addCurrency(0, amount)
-    Core.NotifyRightTip(source,_U('youTook')..amount..'$', 5000)
+    if cash > 0 then
+        character.addCurrency(0, cash)
+    end
 
-    discord:sendMessage('Name: ' .. character.firstname .. ' ' .. character.lastname .. '\nIdentifier: ' .. character.identifier .. '\nReward: ' .. amount)
-end)
+    if gold > 0 then
+        character.addCurrency(1, gold)
+    end
 
-RegisterServerEvent('bcc-robbery:ItemsPayout', function(table)
-    local src = source
-    local user = Core.getUser(src)
-    if not user then return end
-    local character = user.getUsedCharacter
+    if rol > 0 then
+        character.addCurrency(2, rol)
+    end
 
-    for _, reward in pairs(table.ItemRewards) do
+    Core.NotifyRightTip(source, _U('youTook') .. '$~o~' .. cash .. '~q~, ~o~' .. gold .. '~q~ gold' .. ', ~o~' .. rol .. '~q~ rol', 5000)
+
+    discord:sendMessage('Name: ' .. character.firstname .. ' ' .. character.lastname .. '\nIdentifier: ' .. character.identifier ..
+    '\nReward: ' .. '$' .. tostring(cash) ..
+    '\nReward: ' .. tostring(gold) .. ' gold' ..
+    '\nReward: ' .. tostring(rol) .. ' rol')
+
+    for _, reward in pairs(lootCfg.ItemRewards) do
         local canCarry = exports.vorp_inventory:canCarryItem(src, reward.name, reward.count)
         if canCarry then
             exports.vorp_inventory:addItem(src, reward.name, reward.count)
-            Core.NotifyRightTip(src,_U('youTook')..reward.count..' '..reward.name, 5000)
+            Core.NotifyRightTip(src,_U('youTook')..reward.count..' '..reward.name, 4000)
 
             discord:sendMessage('Name: ' .. character.firstname .. ' ' .. character.lastname .. '\nIdentifier: ' .. character.identifier .. '\nReward: ' .. reward.count..' '..reward.name)
         else
