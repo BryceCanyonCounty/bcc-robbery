@@ -11,7 +11,7 @@ Locales["de_lang"] = {
     RobberyEnable = 'Raub aktiviert! Schieße, um hier den Raub zu starten!',
     RobberyDisable = 'Raub deaktiviert',
     WrongJob = 'Mit meinem Job sollte ich das besser nicht machen...!',
-    youTook = 'Erhalten: ~o~',
+    youTook = 'Erhalten: ',
     NotEnoughPolice = 'Zu wenig Sheriffs im Dienst, um zu starten',
     NoSpace = 'Deine Taschen sind zu voll',
 }
