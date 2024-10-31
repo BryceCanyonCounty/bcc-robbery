@@ -68,9 +68,11 @@ AddEventHandler('bcc-robbery:RobberyHandler', function(locationCfg)
         TriggerEvent('bcc-robbery:EnemyPeds', locationCfg)
     end
 
+    Countdown = true
     TriggerEvent('bcc-robbery:Countdown', locationCfg)
     local startingCoords = locationCfg.StartingCoords
-    while true do
+
+    while Countdown do
         Wait(0)
         local playerPed = PlayerPedId()
         local playerCoords = GetEntityCoords(playerPed)
@@ -99,7 +101,6 @@ AddEventHandler('bcc-robbery:RobberyHandler', function(locationCfg)
 end)
 
 AddEventHandler('bcc-robbery:Countdown', function(locationCfg)
-    Countdown = true
     Timer = locationCfg.WaitBeforeLoot
     while Countdown do
         Wait(1000)
@@ -162,10 +163,7 @@ AddEventHandler('bcc-robbery:LootHandler', function(lootCfg)
 
                 MiniGame.Start('lockpick', cfg, function(result)
                     if result.unlocked then
-                        if lootCfg.CashReward > 0 then
-                            TriggerServerEvent('bcc-robbery:CashPayout', lootCfg.CashReward)
-                        end
-                        TriggerServerEvent('bcc-robbery:ItemsPayout', lootCfg)
+                        TriggerServerEvent('bcc-robbery:RewardPayout', lootCfg)
                         Inmission = false
                     else
                         Core.NotifyRightTip(_U('PickFailed'), 4000)
@@ -207,6 +205,7 @@ AddEventHandler('bcc-robbery:EnemyPeds', function(location)
         Citizen.InvokeNative(0xF166E48407BAC484, enemyPeds[k], PlayerPedId(), 0, 0) -- TaskCombatPed
         Citizen.InvokeNative(0x23f74c2fda6e7c61, 953018525, enemyPeds[k]) -- BlipAddForEntity
     end
+
     while true do
         Wait(1000)
         if DoReset then

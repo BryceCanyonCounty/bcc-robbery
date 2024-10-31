@@ -11,7 +11,7 @@ Locales["en_lang"] = {
     RobberyEnable = 'Robberies enabled, shoot a gun at a valid location to start a robbery!',
     RobberyDisable = 'Robberies Disabled',
     WrongJob = 'You can not start robberies due to your job!',
-    youTook = 'You took ~o~',
+    youTook = 'You took ',
     NotEnoughPolice = 'There are not enough police officers to start this robbery',
-    NoSpace = 'You do not have enough space in your inventory',
+    NoSpace = 'No room for other items!',
 }
