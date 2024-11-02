@@ -16,13 +16,13 @@ Core.Callback.Register('bcc-robbery:CheckCooldown', function(source, cb, locatio
     if cooldowns[id] then
         local minutes = (Config.RobberyCooldown * 60)
         if os.difftime(os.time(), cooldowns[id]) >= minutes then --Check if the cooldown has expired
-            cooldowns[id] = os.time() -- If expired, store the current time
+            cooldowns[id] = os.time()                            -- If expired, store the current time
             cb(true)
             policeAlert:SendAlert(src)
         else --Robbery is on cooldown
             cb(false)
         end
-    else  --Robbery is not on cooldown
+    else                          --Robbery is not on cooldown
         cooldowns[id] = os.time() --Store the current time
         cb(true)
         policeAlert:SendAlert(src)
@@ -50,24 +50,30 @@ RegisterServerEvent('bcc-robbery:RewardPayout', function(lootCfg)
         character.addCurrency(2, rol)
     end
 
-    Core.NotifyRightTip(source, _U('youTook') .. '$~o~' .. cash .. '~q~, ~o~' .. gold .. '~q~ gold' .. ', ~o~' .. rol .. '~q~ rol', 5000)
+    Core.NotifyRightTip(source,
+        _U('youTook') .. '$~o~' .. cash .. '~q~, ~o~' .. gold .. '~q~ gold' .. ', ~o~' .. rol .. '~q~ rol', 5000)
 
-    discord:sendMessage('Name: ' .. character.firstname .. ' ' .. character.lastname .. '\nIdentifier: ' .. character.identifier ..
-    '\nReward: ' .. '$' .. tostring(cash) ..
-    '\nReward: ' .. tostring(gold) .. ' gold' ..
-    '\nReward: ' .. tostring(rol) .. ' rol')
+    discord:sendMessage('Name: ' ..
+        character.firstname .. ' ' .. character.lastname .. '\nIdentifier: ' .. character.identifier ..
+        '\nReward: ' .. '$' .. tostring(cash) ..
+        '\nReward: ' .. tostring(gold) .. ' gold' ..
+        '\nReward: ' .. tostring(rol) .. ' rol')
 
     for _, reward in pairs(lootCfg.ItemRewards) do
         local canCarry = exports.vorp_inventory:canCarryItem(src, reward.name, reward.count)
         if canCarry then
             exports.vorp_inventory:addItem(src, reward.name, reward.count)
-            Core.NotifyRightTip(src,_U('youTook')..reward.count..' '..reward.name, 4000)
+            Core.NotifyRightTip(src, _U('youTook') .. reward.count .. ' ' .. reward.label, 4000)
 
-            discord:sendMessage('Name: ' .. character.firstname .. ' ' .. character.lastname .. '\nIdentifier: ' .. character.identifier .. '\nReward: ' .. reward.count..' '..reward.name)
+            discord:sendMessage('Name: ' ..
+            character.firstname ..
+            ' ' ..
+            character.lastname ..
+            '\nIdentifier: ' .. character.identifier .. '\nReward: ' .. reward.count .. ' ' .. reward.name)
         else
             Core.NotifyRightTip(src, _U('NoSpace'), 4000)
         end
-	end
+    end
 end)
 
 Core.Callback.Register('bcc-robbery:RobberyCheck', function(source, cb)
@@ -104,7 +110,7 @@ Core.Callback.Register('bcc-robbery:RobberyCheck', function(source, cb)
     end
     -- Check if there are enough police
     if policeCount < Config.Jobs.LawAmount then
-        Core.NotifyRightTip(src,  _U('NotEnoughPolice'), 4000)
+        Core.NotifyRightTip(src, _U('NotEnoughPolice'), 4000)
         return cb(false)
     end
     cb(true)
