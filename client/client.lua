@@ -13,6 +13,18 @@ RegisterCommand(Config.RobberyCommand, function()
         if result then
             RobberyEnabled = true
             Core.NotifyRightTip(_U('RobberyEnable'), 4000)
+            Citizen.CreateThread(function()
+                while RobberyEnabled do
+                    Citizen.Wait(0)
+                    for _, coords in ipairs(Markers) do
+                        Citizen.InvokeNative(0x2A32FAA57B937173, 0x07DCE236, coords.x, coords.y, coords.z - 0.9, 0, 0, 0, --you can change the marker @ (https://github.com/femga/rdr3_discoveries/blob/master/graphics/markers/marker_types.lua)
+                            0, 0, 0, 1.0, 1.0, 1.0, 250, 250, 100, 250, 0, 0, 2, 0, 0, 0, 0)
+                    end
+                    if not RobberyEnabled then
+                        break
+                    end
+                end
+            end)
         else
             RobberyEnabled = false
         end
@@ -83,7 +95,8 @@ AddEventHandler('bcc-robbery:RobberyHandler', function(locationCfg)
             break
         end
 
-        BccUtils.Misc.DrawText3D(playerCoords.x, playerCoords.y, playerCoords.z + 0.5, _U('HoldOutBeforeLooting') .. ' ' .. tostring(Timer) .. ' ' .. _U('HoldOutBeforeLooting2'))
+        BccUtils.Misc.DrawText3D(playerCoords.x, playerCoords.y, playerCoords.z + 0.5,
+            _U('HoldOutBeforeLooting') .. ' ' .. tostring(Timer) .. ' ' .. _U('HoldOutBeforeLooting2'))
         if Timer <= 0 then
             Core.NotifyRightTip(_U('LootMarked'), 4000)
             break
@@ -115,15 +128,16 @@ AddEventHandler('bcc-robbery:LootHandler', function(lootCfg)
     math.randomseed(GetGameTimer()) --Create a new seed for math.random
 
     local lootGroup = BccUtils.Prompts:SetupPromptGroup()
-    local lootPrompt = lootGroup:RegisterPrompt(_U('Rob'), Config.Keys.Loot, 1, 1, true, 'hold', {timedeventhash = "MEDIUM_TIMED_EVENT"})
+    local lootPrompt = lootGroup:RegisterPrompt(_U('Rob'), Config.Keys.Loot, 1, 1, true, 'hold',
+        { timedeventhash = "MEDIUM_TIMED_EVENT" })
 
     -- Minigame Config
     local cfg = {
-        focus = true, -- Should minigame take nui focus
-        cursor = true, -- Should minigame have cursor  (required for lockpick)
+        focus = true,                                     -- Should minigame take nui focus
+        cursor = true,                                    -- Should minigame have cursor  (required for lockpick)
         maxattempts = Config.LockPick.MaxAttemptsPerLock, -- How many fail attempts are allowed before game over
-        threshold = Config.LockPick.difficulty, -- +- threshold to the stage degree (bigger number means easier)
-        hintdelay = Config.LockPick.hintdelay, --milliseconds delay on when the circle will shake to show lockpick is in the right position.
+        threshold = Config.LockPick.difficulty,           -- +- threshold to the stage degree (bigger number means easier)
+        hintdelay = Config.LockPick.hintdelay,            --milliseconds delay on when the circle will shake to show lockpick is in the right position.
         stages = Config.LockPick.pins
     }
 
@@ -154,13 +168,13 @@ AddEventHandler('bcc-robbery:LootHandler', function(lootCfg)
         end
 
         if distance < 6 then
-            BccUtils.Misc.DrawText3D(lootCfg.LootCoordinates.x, lootCfg.LootCoordinates.y, lootCfg.LootCoordinates.z, _U('Robbery'))
+            BccUtils.Misc.DrawText3D(lootCfg.LootCoordinates.x, lootCfg.LootCoordinates.y, lootCfg.LootCoordinates.z,
+                _U('Robbery'))
         end
 
         if distance < 2 then
             lootGroup:ShowGroup(_U('Robbery'))
             if lootPrompt:HasCompleted() then
-
                 MiniGame.Start('lockpick', cfg, function(result)
                     if result.unlocked then
                         TriggerServerEvent('bcc-robbery:RewardPayout', lootCfg)
@@ -200,10 +214,11 @@ AddEventHandler('bcc-robbery:EnemyPeds', function(location)
     LoadModel(hash, model)
 
     for k, coords in pairs(NpcCoords) do
-        enemyPeds[k] = Citizen.InvokeNative(0xD49F9B0955C367DE, hash, coords.x, coords.y, coords.z, 0.0, true, false, false, false) -- CreatePed
-        Citizen.InvokeNative(0x283978A15512B2FE, enemyPeds[k], true) -- SetRandomOutfitVariation
+        enemyPeds[k] = Citizen.InvokeNative(0xD49F9B0955C367DE, hash, coords.x, coords.y, coords.z, 0.0, true, false,
+            false, false)                                                           -- CreatePed
+        Citizen.InvokeNative(0x283978A15512B2FE, enemyPeds[k], true)                -- SetRandomOutfitVariation
         Citizen.InvokeNative(0xF166E48407BAC484, enemyPeds[k], PlayerPedId(), 0, 0) -- TaskCombatPed
-        Citizen.InvokeNative(0x23f74c2fda6e7c61, 953018525, enemyPeds[k]) -- BlipAddForEntity
+        Citizen.InvokeNative(0x23f74c2fda6e7c61, 953018525, enemyPeds[k])           -- BlipAddForEntity
     end
 
     while true do
