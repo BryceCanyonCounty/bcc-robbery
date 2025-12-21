@@ -1,0 +1,17 @@
+Locales["pl_lang"] = {
+    RobberyStart = 'Napad rozpoczęty!',
+    OnCooldown = 'To miejsce zostało niedawno obrabowane!',
+    LootMarked = 'Zacznij plądrowanie!',
+    HoldOutBeforeLooting = 'Czekaj',
+    HoldOutBeforeLooting2 = 'sekund przed plądrowaniem',
+    RobberyFail = 'Napad nieudany!',
+    Rob = 'Otwórz wytrychem',
+    Robbery = 'Kasetka',
+    PickFailed = 'Włamanie nieudane, wytrych złamany',
+    RobberyEnable = 'Napady włączone, oddaj strzał w odpowiednim miejscu, aby zacząć napad!',
+    RobberyDisable = 'Napady wyłączone',
+    WrongJob = 'Nie możesz dokonywać napadów ze względu na swoją profesję!',
+    youTook = 'Zabrałeś ',
+    NotEnoughPolice = 'Brak wystarczającej liczby stróżów prawa, aby zacząć ten napad',
+    NoSpace = 'Brak miejsca na kolejne przedmioty!',
+}
